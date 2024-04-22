@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TampiGuessr</title>
+</head>
+<style>
+    .empBtn {
+        font-size: 6vh;
+        cursor: pointer;
+        font-family: fantasy;
+        padding-left: 3vh;
+        padding-right: 3vh;
+        color: #ffffff;
+        background-color: #67d427;
+        border-radius: 100vh;
+        border: none;
+        transition: 0.2s;
+        margin-top: 20vh;
+    }
+
+    .empBtn:hover {
+        transform: scale(1.1);
+        box-shadow: 5px 5px 30px rgb(40, 40, 40);
+        transition: ease 0.2s;
+    }
+
+    #map {
+        height: 40vh;
+        width: 40vh;
+        float: left;
+        border-top-left-radius: 3vh;
+    }
+
+    .map {
+        display: flex;
+        position: absolute;
+        height: 10px;
+        bottom: 0px;
+        right: 0px;
+        z-index: 2;
+    }
+
+    #mainScreen {
+        height: 100vh;
+        background-image: url(img/tampico.jpg);
+        background-repeat: space;
+        background-size: cover;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 99;
+        transition: opacity 1s;
+        opacity: 1;
+    }
+
+    #mainScreen.oculto {
+        opacity: 0;
+        pointer-events: none;
+        display: none;
+    }
+
+    #street-view {
+        height: 100%;
+        width: 100%;
+    }
+
+    .home {
+        height: 70%;
+        width: fit-content;
+    }
+
+    .home:hover {
+        cursor: pointer;
+    }
+</style>
+
+<body style="margin: 0px; height: 100%">
+    <div id="mainScreen"
+        style="position: absolute; width: 100%; height: 100vh; background-image: url(img/tampico.jpg); background-repeat: space; background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div
+            style="display: flex; flex-direction: column; align-items: center; border-radius: 3vh; justify-content: center; text-align: center; width: 60%; background-color: #dfdfdf00; backdrop-filter: blur(0.2vh); -webkit-backdrop-filter: blur(10vh);">
+            <a href="test.html"><img src="img/tampiguessr.png" style="width: 70%;"></a>
+            <button onclick="empezarJuego()" class="empBtn">Empezar</button>
+        </div>
+    </div>
+
+    <div
+        style="align-items: center; justify-content: center; display: flex; flex-direction: column; position: absolute; height: 10vh ; width: 100%; z-index: 4; background-color: #252525;">
+        <img onclick="home()" class="home" src="img/logo.png">
+    </div>
+    <div
+        style="display: flex; height: 100vh; background-color: rgb(214, 214, 214); flex-direction: column; align-items: center; justify-content: center;">
+        <div class="map" id="map"></div>
+        <div id="street-view"></div>
+    </div>
+    <script>
+
+        function home() {
+            window.location.href = "index.html";
+        }
+
+        var mainScreen = document.getElementById("mainScreen");
+        function empezarJuego() {
+            mainScreen.classList.add("oculto");
+        }
+    </script>
+    <script>
+        var map; // Variable global para el mapa
+        var markers = []; // Array para almacenar los marcadores
+
+        function generateRandomCoordinates(minLat, maxLat, minLng, maxLng) {
+            var randomLat = Math.random() * (maxLat - minLat) + minLat;
+            var randomLng = Math.random() * (maxLng - minLng) + minLng;
+            return { lat: randomLat, lng: randomLng };
+        }
+
+        function initializeStreetView() {
+            var attempts = 0;
+            var maxAttempts = 20;
+            var streetViewService = new google.maps.StreetViewService();
+
+            function checkStreetViewAvailability(coordinates) {
+                streetViewService.getPanorama({ location: coordinates, radius: 50 }, function (data, status) {
+                    if (status === 'OK') {
+                        var panoramaOptions = {
+                            position: coordinates,
+                            pov: { heading: 0, pitch: 0 },
+                            zoom: 1,
+                            showLocationPanel: false,
+                            showRoadLabels: false // Oculta el nombre de las calles
+                        };
+                        var streetView = new google.maps.StreetViewPanorama(document.getElementById('street-view'), panoramaOptions);
+                        getAddress(coordinates);
+                    } else {
+                        attempts++;
+                        if (attempts < maxAttempts) {
+                            generateAndCheckCoordinates();
+                        } else {
+                            console.error('No se encontraron ubicaciones con Street View dentro del margen especificado.');
+                        }
+                    }
+                });
+            }
+
+            function generateAndCheckCoordinates() {
+                var randomCoordinates = generateRandomCoordinates(22.352500, 22.210202, -97.904524, -97.784303);
+                checkStreetViewAvailability(randomCoordinates);
+            }
+
+            function getAddress(coordinates) {
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ 'location': coordinates }, function (results, status) {
+                    if (status === 'OK') {
+                        if (results[0]) {
+                            console.log("Dirección:", results[0].formatted_address);
+                            if (results[0].formatted_address.includes("Ver.")) {
+                                console.log("La dirección contiene 'Ver.' Se generará otra dirección.");
+                                generateAndCheckCoordinates();
+                            }
+                        } else {
+                            console.error('No se encontraron resultados de dirección para estas coordenadas.');
+                        }
+                    } else {
+                        console.error('Error al obtener la dirección:', status);
+                    }
+                });
+            }
+
+            generateAndCheckCoordinates();
+        }
+    </script>
+    <script>
+        function initMap() {
+            const mapOptions = {
+                center: { lat: 22.28552, lng: -97.86614 }, // Centro de Tampico, México
+                zoom: 12
+            };
+            map = new google.maps.Map(document.getElementById('map'), mapOptions); // Asignar a la variable global
+
+            initializeStreetView(); // Llamar a initializeStreetView() después de inicializar el mapa
+
+            // Agregar evento de clic al mapa
+            map.addListener('click', function (event) {
+                placeMarker(event.latLng); // Llamar a la función placeMarker con las coordenadas del clic
+            });
+        }
+
+        // Función para colocar un marcador en el mapa y mostrar las coordenadas
+        function placeMarker(location) {
+            if (markers.length >= 1) { // Limitar a 5 marcadores
+                console.log("Se alcanzó el número máximo de marcadores.");
+                return;
+            }
+
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map, // Usar la variable global
+                draggable: true // Hacer el marcador draggable
+            });
+
+            markers.push(marker); // Agregar el marcador al array
+
+            console.log("Coordenadas:", marker.getPosition().lat(), marker.getPosition().lng());
+
+            // Agregar evento dragend para mostrar las coordenadas al soltar el marcador
+            marker.addListener('dragend', function () {
+                console.log("Coordenadas:", marker.getPosition().lat(), marker.getPosition().lng());
+            });
+        }
+    </script>
+    <!-- Reemplaza 'AIzaSyCgIQPaUQ4Nl9fOjxY2CFt7omYK_RZrTso' con tu propia clave de API -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgIQPaUQ4Nl9fOjxY2CFt7omYK_RZrTso&callback=initMap"></script>
+</body>
+
+</html>
