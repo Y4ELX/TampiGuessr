@@ -11,19 +11,24 @@
         font-size: 6vh;
         cursor: pointer;
         font-family: fantasy;
-        padding-left: 3vh;
-        padding-right: 3vh;
+        width: 20vh;
+        height: 20vh;
+        padding: 3vh;
         color: #ffffff;
-        background-color: #67d427;
+        background-color: #cc302e;
         border-radius: 100vh;
         border: none;
         transition: 0.2s;
-        margin-top: 20vh;
+        margin-top: 10vh;
+        background-image: url(img/play.png);
+        background-repeat: no-repeat;
+        background-size: 50%;
+        background-position: center;
     }
 
     .empBtn:hover {
         transform: scale(1.1);
-        box-shadow: 5px 5px 30px rgb(40, 40, 40);
+        box-shadow: 5px 5px 20px #161616;
         transition: ease 0.2s;
     }
 
@@ -31,7 +36,6 @@
         height: 40vh;
         width: 40vh;
         float: left;
-        border-top-left-radius: 3vh;
     }
 
     .map {
@@ -39,6 +43,22 @@
         position: absolute;
         height: 10px;
         bottom: 0px;
+        right: 0px;
+        z-index: 2;
+    }
+
+    .info {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        border-top-left-radius: 3vh;
+        background-color: #ededed;
+        display: flex;
+        position: absolute;
+        height: 10vh;
+        width: 40vh;
+        bottom: 40vh;
         right: 0px;
         z-index: 2;
     }
@@ -69,12 +89,18 @@
     }
 
     .home {
-        height: 70%;
+        height: 50%;
         width: fit-content;
     }
 
     .home:hover {
         cursor: pointer;
+    }
+
+    .tampiguessr{
+        width: 70vh;
+        transition: 3s ease; /* Transición suave de 1 segundo */
+
     }
 </style>
 
@@ -82,21 +108,60 @@
     <div id="mainScreen"
         style="position: absolute; width: 100%; height: 100vh; background-image: url(img/tampico.jpg); background-repeat: space; background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <div
-            style="display: flex; flex-direction: column; align-items: center; border-radius: 3vh; justify-content: center; text-align: center; width: 60%; background-color: #dfdfdf00; backdrop-filter: blur(0.2vh); -webkit-backdrop-filter: blur(10vh);">
-            <a href="test.html"><img src="img/tampiguessr.png" style="width: 70%;"></a>
-            <button onclick="empezarJuego()" class="empBtn">Empezar</button>
+            style="display: flex; flex-direction: column; align-items: center; border-radius: 3vh; justify-content: center; text-align: center; width: 60%;">
+            <img class="tampiguessr" id="tampiguessr" src="img/tampiguessr.png">
+            <button onclick="empezarJuego()" class="empBtn"></button>
         </div>
     </div>
 
-    <div
-        style="align-items: center; justify-content: center; display: flex; flex-direction: column; position: absolute; height: 10vh ; width: 100%; z-index: 4; background-color: #252525;">
+    <div id="miDiv"
+        style="padding-left: 5vh; padding-right: 5vh; align-items: start; justify-content: center; display: flex; flex-direction: column; position: absolute; height: 70px ; width: 95.4%; z-index: 4; background-color: #252525;">
         <img onclick="home()" class="home" src="img/logo.png">
     </div>
     <div
         style="display: flex; height: 100vh; background-color: rgb(214, 214, 214); flex-direction: column; align-items: center; justify-content: center;">
+        <div class="info">
+            <img style="width: 33%; height: fit-content;" src="img/logo.png">
+            <img style="width: 33%; height: fit-content;" src="img/logo.png">
+            <img style="width: 33%; height: fit-content;" src="img/logo.png">
+        </div>
         <div class="map" id="map"></div>
         <div id="street-view"></div>
     </div>
+    <script>
+        // Contador para el número de veces que se presiona la tecla "P"
+        var contadorP = 0;
+
+        // Función para manejar el evento de tecla presionada
+        function manejarTeclaPresionada(event) {
+            // Verificar si la tecla presionada es "P" (código 80)
+            if (event.keyCode === 80) {
+                // Incrementar el contador de "P" presionadas
+                contadorP++;
+
+                // Si se presiona "P" tres veces, ocultar el div
+                if (contadorP === 15) {
+                    document.getElementById("miDiv").style.display = "none";
+                }
+            }
+        }
+
+        // Agregar un event listener para capturar la pulsación de tecla
+        document.addEventListener("keydown", manejarTeclaPresionada);
+    </script>
+    <script>
+        //ANIMACIONESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+        // Espera a que el contenido de la página esté completamente cargado
+            document.addEventListener("DOMContentLoaded", function () {
+                // Selecciona la imagen
+                var imagen = document.getElementById("tampiguessr");
+
+                // Hace que la imagen aumente de tamaño después de un breve retraso
+                setTimeout(function () {
+                    imagen.style.width = "100vh"; // Nuevo tamaño de la imagen
+                }, 400); // 1000ms = 1 segundo de retraso
+            });
+    </script>
     <script>
 
         function home() {
