@@ -1,0 +1,10 @@
+static int Metodo(int(] arreglo)
+
+int aux = arreglo[0];
+for (int 1 = 0; 1 < arreglo.Length; 1++)
+
+1
+Af (aux*a % 2 == 0)
+aux += arreglo(1];
+)
+return aux;

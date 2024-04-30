@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/img/logo.ico">
     <title>TampiGuessr</title>
 </head>
 <style>
@@ -33,17 +34,19 @@
     }
 
     #map {
-        height: 40vh;
+        height: 20vh;
         width: 40vh;
         float: left;
+        border-radius: 1vh;
+        transition: ease-in-out 0.5s;
     }
+
 
     .map {
         display: flex;
         position: absolute;
-        height: 10px;
-        bottom: 0px;
-        right: 0px;
+        bottom: 10vh;
+        right: 10px;
         z-index: 2;
     }
 
@@ -52,14 +55,13 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
-        border-top-left-radius: 3vh;
-        background-color: #ededed;
+        background-color: #ededed00;
         display: flex;
         position: absolute;
         height: 10vh;
         width: 40vh;
-        bottom: 40vh;
-        right: 0px;
+        bottom: 0vh;
+        right: 10px;
         z-index: 2;
     }
 
@@ -88,6 +90,16 @@
         width: 100%;
     }
 
+        /* Redefine el tamaño de los controles de zoom */
+    .gm-style .gm-zoom-control {
+        width: 20px; /* Ajusta el ancho de los controles */
+        height: 20px; /* Ajusta la altura de los controles */
+    }
+
+    .gm-style .gm-zoom-control i {
+        font-size: 16px; /* Ajusta el tamaño del icono de zoom */
+    }
+
     .home {
         height: 50%;
         width: fit-content;
@@ -102,6 +114,74 @@
         transition: 3s ease; /* Transición suave de 1 segundo */
 
     }
+
+    .advBtn{
+        background-color: #cc302e;
+        border: none;
+        border-radius: 1vh;
+        width: 100%;
+        color: #ededed;
+        height: 70%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 600;
+        font-size: xx-large;
+    }
+
+    .advBtn:hover{
+        cursor: pointer;
+    }
+
+    .resPanel{
+        background-color: #252525;
+        position: absolute;
+        padding: 0px;
+        height: 20vh;
+        width: 100%;
+        z-index: 3;
+        bottom: 0px;
+        left: 0px;
+        display: none;
+        opacity: 0;
+        transition: ease-in-out 0.5s;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5%;
+        color: #ededed;
+    }
+
+    .resPanel.visible {
+        display: flex;
+        opacity: 1;
+    }
+
+    .resPanel.ocultar {
+        display: none;
+        opacity: 0;
+    }
+
+    .contBtn{
+        width: 20vh; height: 10vh;         
+        background-color: #cc302e;
+        background-image: url(img/play.png);
+        border-radius: 100vh;
+        background-repeat: no-repeat;
+        background-size: 30%;
+        background-position: center;
+        border: none;
+    }
+
+    .contBtn:hover{
+        cursor: pointer;
+    }
+
+    .priP{
+        text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 900; font-size: 5vh; padding: 0px; margin: 0px;
+    }
+
+    .secP{
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0px; padding: 0px; text-align: center;
+    }
 </style>
 
 <body style="margin: 0px; height: 100%">
@@ -114,20 +194,184 @@
         </div>
     </div>
 
+    <div id="resPanel" class="resPanel">
+        <div>
+            <p class="priP" id="distP">100</p>
+            <p class="secP">de la ubicación</p>
+        </div>
+        <button onclick="nextRound()" id="contBtn" class="contBtn"></button>
+        <div>
+            <p class="priP" id="puntosP">100</p>
+            <p class="secP" >de 5,000 puntos</p>
+        </div>
+    </div>
+
     <div id="miDiv"
-        style="padding-left: 5vh; padding-right: 5vh; align-items: start; justify-content: center; display: flex; flex-direction: column; position: absolute; height: 70px ; width: 95.4%; z-index: 4; background-color: #252525;">
+        style="padding-left: 5vh; padding-right: 5vh; align-items: start; justify-content: center; display: flex; flex-direction: column; position: absolute; height: 50px ; width: 95.4%; z-index: 4; background-color: #252525d0;">
         <img onclick="home()" class="home" src="img/logo.png">
     </div>
     <div
         style="display: flex; height: 100vh; background-color: rgb(214, 214, 214); flex-direction: column; align-items: center; justify-content: center;">
-        <div class="info">
-            <img style="width: 33%; height: fit-content;" src="img/logo.png">
-            <img style="width: 33%; height: fit-content;" src="img/logo.png">
-            <img style="width: 33%; height: fit-content;" src="img/logo.png">
+        <div id="info" class="info">
+            <button onclick="adivinarBtn()" id="advBtn" class="advBtn" src="img/logo.png">Adivinar</button>
         </div>
         <div class="map" id="map"></div>
         <div id="street-view"></div>
     </div>
+    <script>
+        var puntosTotales = 0;
+        var round = 5;
+        var marker = null;
+        var menu = false;
+        var mlat, mlng, plat, plng;
+
+        var panel = document.getElementById("resPanel");
+
+    function distanciaEntrePuntos(lat1, lon1, lat2, lon2) {
+        // Radio de la Tierra en kilómetros
+        var radioTierra = 6371;
+
+        // Convertir grados a radianes
+        var latitud1 = degToRad(lat1);
+        var longitud1 = degToRad(lon1);
+        var latitud2 = degToRad(lat2);
+        var longitud2 = degToRad(lon2);
+
+        // Diferencia de las longitudes y latitudes
+        var deltaLat = latitud2 - latitud1;
+        var deltaLon = longitud2 - longitud1;
+
+        // Fórmula de Haversine
+        var a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+            Math.cos(latitud1) * Math.cos(latitud2) *
+            Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var distancia = radioTierra * c;
+
+        return distancia;
+    }
+
+    function degToRad(grados) {
+        return grados * Math.PI / 180;
+    }
+
+                // Función para generar coordenadas aleatorias y colocar un pin en esas coordenadas
+    function generateAndPlaceRandomPin() {
+        // Generar coordenadas aleatorias dentro del rango deseado
+        var randomCoordinates = generateRandomCoordinates(22.210202, 22.352500, -97.904524, -97.784303);
+
+        // Colocar un pin en las coordenadas generadas
+        placeMarker(randomCoordinates); // Llamar a placeMarker con las coordenadas generadas
+    }
+
+                // Función para colocar un marcador en el mapa y mostrar las coordenadas
+                    function placeMarker(location) {
+                        marker = new google.maps.Marker({
+                            position: location,
+                            map: map, // Usar la variable global 
+                            draggable: true // Hacer el marcador draggable
+                        });
+
+                        markers.push(marker); // Agregar el marcador al array
+
+                        console.log("Coordenadas:", marker.getPosition().lat(), marker.getPosition().lng());
+
+                        // Agregar evento dragend para mostrar las coordenadas al soltar el marcador
+                        marker.addListener('dragend', function () {
+                            console.log("Coordenadas:", marker.getPosition().lat(), marker.getPosition().lng());
+                        });
+
+                        // Guardar las coordenadas en las variables globales
+                        plat = marker.getPosition().lat();
+                        plng = marker.getPosition().lng();
+                    }
+    
+    function dibujarLineaRecta(coord1, coord2) {
+        var line = new google.maps.Polyline({
+            path: [coord1, coord2],
+            geodesic: true,
+            strokeColor: '#FF0000', // Color rojo
+            strokeOpacity: 1.0,
+            strokeWeight: 2 // Grosor de la línea
+        });
+        line.setMap(map); // Agregar la línea al mapa
+    }
+    
+    function adivinarBtn() {
+            if (marker != null) {
+                menu = true;
+
+                console.log("Marker: " + marker.getPosition().lat(), marker.getPosition().lng());
+                var mlat = marker.getPosition().lat();
+                var mlng = marker.getPosition().lng();
+
+                console.log("Marcador Latitud:", mlat);
+                console.log("Marcador Longitud:", mlng);
+                console.log("Punto Latitud:", plat);
+                console.log("Punto Longitud:", plng);
+
+                // Calcular la distancia
+                var distancia = distanciaEntrePuntos(plat, plng, mlat, mlng);
+
+                // Imprimir consola la distancia
+                console.log("Distancia entre los dos puntos:" + (distancia < 1 ? (distancia * 1000).toFixed(0) + " m" : distancia.toFixed(2) + " km"));
+
+                // Calcular los puntos
+                var puntos = calcularPuntos(distancia);
+
+                // Mostrar distancia y puntos en la interfaz
+                var distanciaP = document.getElementById("distP");
+                var puntosP = document.getElementById("puntosP");
+
+                distanciaP.textContent = (distancia < 1 ? (distancia * 1000).toFixed(0) + " m" : distancia.toFixed(2) + " km");
+                puntosP.textContent = puntos.toString();
+
+                var map = document.getElementById("map");
+                var info = document.getElementById("info");
+
+                info.style.display = "none";
+
+                map.style.width = "100%";
+                map.style.height = "80vh";
+                map.style.top = "0px";
+                map.style.right = "0px";
+
+                panel.classList.add("visible");
+
+                // Posicionar el marcador en las mismas coordenadas que getAddress(coordinates)
+                placeMarker({ lat: plat, lng: plng });
+
+                // Dibujar la línea entre los dos marcadores
+                dibujarLineaRecta({ lat: plat, lng: plng }, { lat: mlat, lng: mlng });
+
+                puntosTotales += puntos;
+            }
+        }
+
+    // Función para calcular los puntos
+    function calcularPuntos(distancia) {
+        // Convertir la distancia a metros
+        var distanciaMetros = distancia < 1 ? distancia * 1000 : distancia * 1000;
+
+        // Definir el área total de la ciudad en metros cuadrados
+        var areaCiudadMetrosCuadrados = 9273000; // 92.73 km² * 1,000,000 (1 km² = 1,000,000 m²)
+
+        // Definir la máxima distancia posible (diagonal de la ciudad)
+        var maxDistanciaMetros = Math.sqrt(areaCiudadMetrosCuadrados * 2);
+
+        // Calcular los puntos
+        var puntos = 5000 - ((distanciaMetros / maxDistanciaMetros) * 5000);
+
+        // Asegurarse de que los puntos no sean negativos
+        puntos = Math.max(0, puntos);
+
+        // Redondear los puntos
+        puntos = Math.round(puntos);
+
+        return puntos;
+    }
+
+    </script>
     <script>
         // Contador para el número de veces que se presiona la tecla "P"
         var contadorP = 0;
@@ -160,6 +404,51 @@
                 setTimeout(function () {
                     imagen.style.width = "100vh"; // Nuevo tamaño de la imagen
                 }, 400); // 1000ms = 1 segundo de retraso
+
+                                // Agrega los eventos mouseover y mouseout al mapa y al street view después de que se inicialice
+                var map = document.getElementById("map");
+                var info = document.getElementById("info");
+
+                
+                    map.addEventListener("mouseover", function () {
+                        if (menu == false) {
+                            info.style.width = "50vh";
+                            info.style.transition = "ease-in 0.2s";
+                            map.style.width = "50vh";
+                            map.style.height = "35vh";
+                            map.style.transition = "ease-in 0.2s";
+                        }
+                    });
+
+                    map.addEventListener("mouseout", function () {
+                        if (menu == false) {
+                            info.style.width = "40vh";
+                            info.style.transition = "ease-in-out 0.5s";
+                            map.style.width = "40vh";
+                            map.style.height = "20vh";
+                            map.style.transition = "ease-in-out 0.5s";
+                        }
+                    });
+
+                    info.addEventListener("mouseover", function () {
+                        if (menu == false) {
+                            info.style.width = "50vh";
+                            info.style.transition = "ease-in-out 0.2s";
+                            map.style.width = "50vh";
+                            map.style.height = "35vh";
+                            map.style.transition = "ease-in-out 0.2s";
+                        }
+                    });
+
+                    info.addEventListener("mouseout", function () {
+                        if (menu == false) {
+                            info.style.width = "40vh";
+                            info.style.transition = "ease-in-out 0.5s";
+                            map.style.width = "40vh";
+                            map.style.height = "20vh";
+                            map.style.transition = "ease-in-out 0.5s";
+                        }
+                    });
             });
     </script>
     <script>
@@ -183,66 +472,94 @@
             return { lat: randomLat, lng: randomLng };
         }
 
-        function initializeStreetView() {
-            var attempts = 0;
-            var maxAttempts = 20;
-            var streetViewService = new google.maps.StreetViewService();
+    function initializeStreetView() {
+        var attempts = 0;
+        var maxAttempts = 20;
+        var streetViewService = new google.maps.StreetViewService();
 
-            function checkStreetViewAvailability(coordinates) {
-                streetViewService.getPanorama({ location: coordinates, radius: 50 }, function (data, status) {
-                    if (status === 'OK') {
-                        var panoramaOptions = {
-                            position: coordinates,
-                            pov: { heading: 0, pitch: 0 },
-                            zoom: 1,
-                            showLocationPanel: false,
-                            showRoadLabels: false // Oculta el nombre de las calles
-                        };
-                        var streetView = new google.maps.StreetViewPanorama(document.getElementById('street-view'), panoramaOptions);
-                        getAddress(coordinates);
+        function checkStreetViewAvailability(coordinates) {
+            streetViewService.getPanorama({ location: coordinates, radius: 50 }, function (data, status) {
+                if (status === 'OK') {
+                    var panoramaOptions = {
+                        addressControl: false,
+                        fullscreenControl: false,
+                        position: coordinates,
+                        pov: { heading: 0, pitch: 0 },
+                        zoom: 1,
+
+                        showRoadLabels: false, // Oculta el nombre de las calles
+
+                        fullScreenControlOptions: {
+                            position: google.maps.ControlPosition.INLINE_START_BLOCK_END,
+                        },
+                        panControlOptions: {
+                            position: google.maps.ControlPosition.INLINE_START_BLOCK_END,
+                        },
+                        zoomControlOptions: {
+                            position: google.maps.ControlPosition.INLINE_START_BLOCK_END // Cambia la posición del control de zoom
+                        }
+                    };
+                    var streetView = new google.maps.StreetViewPanorama(document.getElementById('street-view'), panoramaOptions);
+                    getAddress(coordinates);
+                } else {
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        generateAndCheckCoordinates();
                     } else {
-                        attempts++;
-                        if (attempts < maxAttempts) {
+                        console.error('No se encontraron ubicaciones con Street View dentro del margen especificado.');
+                    }
+                }
+            });
+        }
+
+        function generateAndCheckCoordinates() {
+            var randomCoordinates = generateRandomCoordinates(22.352500, 22.210202, -97.904524, -97.784303);
+            checkStreetViewAvailability(randomCoordinates);
+        }
+
+        function getAddress(coordinates) {
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ 'location': coordinates }, function (results, status) {
+                if (status === 'OK') {
+                    if (results[0]) {
+                        console.log("Dirección:", results[0].formatted_address);
+                        if (results[0].formatted_address.includes("Ver.")) {
+                            console.log("La dirección contiene 'Ver.' Se generará otra dirección.");
                             generateAndCheckCoordinates();
                         } else {
-                            console.error('No se encontraron ubicaciones con Street View dentro del margen especificado.');
-                        }
-                    }
-                });
-            }
-
-            function generateAndCheckCoordinates() {
-                var randomCoordinates = generateRandomCoordinates(22.352500, 22.210202, -97.904524, -97.784303);
-                checkStreetViewAvailability(randomCoordinates);
-            }
-
-            function getAddress(coordinates) {
-                var geocoder = new google.maps.Geocoder();
-                geocoder.geocode({ 'location': coordinates }, function (results, status) {
-                    if (status === 'OK') {
-                        if (results[0]) {
-                            console.log("Dirección:", results[0].formatted_address);
-                            if (results[0].formatted_address.includes("Ver.")) {
-                                console.log("La dirección contiene 'Ver.' Se generará otra dirección.");
-                                generateAndCheckCoordinates();
-                            }
-                        } else {
-                            console.error('No se encontraron resultados de dirección para estas coordenadas.');
+                            // Guardar las coordenadas en las variables globales solo si no contiene "Ver."
+                            plat = coordinates.lat;
+                            plng = coordinates.lng;
                         }
                     } else {
-                        console.error('Error al obtener la dirección:', status);
+                        console.error('No se encontraron resultados de dirección para estas coordenadas.');
                     }
-                });
-            }
+                } else {
+                    console.error('Error al obtener la dirección:', status);
+                }
+            });
+        }
 
+        generateAndCheckCoordinates();
+        }
+    </script>
+    <script>
+        function nextRound() {
+            panel.classList.add("ocultar");
             generateAndCheckCoordinates();
         }
     </script>
     <script>
+        var map; // Variable global para el mapa
+        var markers = []; // Array para almacenar los marcadores
+
         function initMap() {
             const mapOptions = {
                 center: { lat: 22.28552, lng: -97.86614 }, // Centro de Tampico, México
-                zoom: 12
+                zoom: 12,
+                zoomControl: true,
+                disableDefaultUI: true, // Oculta los controles predeterminados del mapa
+                draggableCursor: 'crosshair' // Cambia el cursor a crosshair
             };
             map = new google.maps.Map(document.getElementById('map'), mapOptions); // Asignar a la variable global
 
@@ -250,20 +567,20 @@
 
             // Agregar evento de clic al mapa
             map.addListener('click', function (event) {
+                if (markers.length >= 1) { // Cambiar 5 por el número máximo de marcadores permitidos
+                    // Eliminar el primer marcador (el más antiguo)
+                    markers[0].setMap(null);
+                    markers.shift(); // Eliminar el primer elemento del array
+                }
                 placeMarker(event.latLng); // Llamar a la función placeMarker con las coordenadas del clic
             });
         }
 
         // Función para colocar un marcador en el mapa y mostrar las coordenadas
         function placeMarker(location) {
-            if (markers.length >= 1) { // Limitar a 5 marcadores
-                console.log("Se alcanzó el número máximo de marcadores.");
-                return;
-            }
-
-            var marker = new google.maps.Marker({
+            marker = new google.maps.Marker({
                 position: location,
-                map: map, // Usar la variable global
+                map: map, // Usar la variable global 
                 draggable: true // Hacer el marcador draggable
             });
 
@@ -277,6 +594,7 @@
             });
         }
     </script>
+
     <!-- Reemplaza 'AIzaSyCgIQPaUQ4Nl9fOjxY2CFt7omYK_RZrTso' con tu propia clave de API -->
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgIQPaUQ4Nl9fOjxY2CFt7omYK_RZrTso&callback=initMap"></script>
