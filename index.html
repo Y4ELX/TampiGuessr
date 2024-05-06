@@ -33,6 +33,31 @@
         transition: ease 0.2s;
     }
 
+        .actBtn {
+        font-size: 6vh;
+        cursor: pointer;
+        font-family: fantasy;
+        width: 20vh;
+        height: 20vh;
+        padding: 3vh;
+        color: #ffffff;
+        background-color: #cc302e;
+        border-radius: 100vh;
+        border: none;
+        transition: 0.2s;
+        margin-top: 10vh;
+        background-image: url(img/restart.png);
+        background-repeat: no-repeat;
+        background-size: 50%;
+        background-position: center;
+    }
+
+    .actBtn:hover {
+        transform: scale(1.1);
+        box-shadow: 5px 5px 20px #161616;
+        transition: ease 0.2s;
+    }
+
     #map {
         height: 20vh;
         width: 40vh;
@@ -51,6 +76,7 @@
     }
 
     .info {
+        font-size: large;
         align-items: center;
         display: flex;
         flex-direction: row;
@@ -124,7 +150,7 @@
         height: 70%;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-weight: 600;
-        font-size: xx-large;
+        font-size: 5vh;
     }
 
     .advBtn:hover{
@@ -194,6 +220,20 @@
         </div>
     </div>
 
+    <div id=" puntuacionTot" style="z-index: 60; visibility: hidden;  background-color: #252525; position: absolute; width: 100%; height: 100vh;  display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div
+            style="display: flex; flex-direction: column; align-items: center; border-radius: 3vh; justify-content: center; text-align: center; width: 60%;">
+            <p
+                style="margin: 0px; color: #ededed; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 900; font-size: 8vh;">
+                Puntuación Total</p>
+            <p
+                id="pPuntuacion"
+                style="margin: 0px; color: #ededed; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 600; font-size: 8vh;">
+                404</p>
+            <button onclick="restart()" class="actBtn"></button>
+        </div>
+    </div>
+
     <div id="resPanel" class="resPanel">
         <div>
             <p class="priP" id="distP">100</p>
@@ -219,6 +259,8 @@
         <div id="street-view"></div>
     </div>
     <script>
+        var markers = []; // Array para almacenar los marcadores
+        var lines = []; // Array para almacenar las líneas dibujadas en el mapa
         var puntosTotales = 0;
         var round = 5;
         var marker = null;
@@ -290,12 +332,14 @@
         var line = new google.maps.Polyline({
             path: [coord1, coord2],
             geodesic: true,
-            strokeColor: '#FF0000', // Color rojo
+            strokeColor: '#FF0000',
             strokeOpacity: 1.0,
-            strokeWeight: 2 // Grosor de la línea
+            strokeWeight: 2
         });
         line.setMap(map); // Agregar la línea al mapa
+        lines.push(line); // Agregar la línea al array de líneas
     }
+
     
     function adivinarBtn() {
             if (marker != null) {
@@ -324,6 +368,15 @@
                 var puntosP = document.getElementById("puntosP");
 
                 distanciaP.textContent = (distancia < 1 ? (distancia * 1000).toFixed(0) + " m" : distancia.toFixed(2) + " km");
+                
+                //compensacion
+                if (puntos > 4500) {
+                    if ((puntos + 50) >= 5000) {
+                        puntos = 5000
+                    }else{
+                        puntos+=50
+                    }
+                }
                 puntosP.textContent = puntos.toString();
 
                 var map = document.getElementById("map");
@@ -336,6 +389,7 @@
                 map.style.top = "0px";
                 map.style.right = "0px";
 
+                panel.classList.remove("ocultar");
                 panel.classList.add("visible");
 
                 // Posicionar el marcador en las mismas coordenadas que getAddress(coordinates)
@@ -451,6 +505,7 @@
                     });
             });
     </script>
+
     <script>
 
         function home() {
@@ -464,7 +519,6 @@
     </script>
     <script>
         var map; // Variable global para el mapa
-        var markers = []; // Array para almacenar los marcadores
 
         function generateRandomCoordinates(minLat, maxLat, minLng, maxLng) {
             var randomLat = Math.random() * (maxLat - minLat) + minLat;
@@ -544,12 +598,6 @@
         }
     </script>
     <script>
-        function nextRound() {
-            panel.classList.add("ocultar");
-            generateAndCheckCoordinates();
-        }
-    </script>
-    <script>
         var map; // Variable global para el mapa
         var markers = []; // Array para almacenar los marcadores
 
@@ -594,8 +642,53 @@
             });
         }
     </script>
+<script>
+    function nextRound() {
+        var info = document.getElementById("info");
+        var map = document.getElementById("map");
+        var pPuntuacion = document.getElementById("pPuntuacion");
+        var puntuacionTot = document.getElementById("puntuacionTot");
+        
+        info.style.display = "flex";
+        menu = false;
 
-    <!-- Reemplaza 'AIzaSyCgIQPaUQ4Nl9fOjxY2CFt7omYK_RZrTso' con tu propia clave de API -->
+        map.style.position = "absolute"; // Cambia el posicionamiento a absoluto
+        map.style.width = "40vh";
+        map.style.height = "20vh";
+        map.style.right = "10px";
+        map.style.top = "unset";
+        map.style.bottom = "10vh"; // Ajusta la posición vertical aquí
+        map.style.transition = "ease-in-out 0.5s";
+
+        //ELIMINAR MARKS Y LINES
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+        }
+        markers = []; // Vaciar el array de marcadores
+        markers = []; // Vaciar el array de marcadores  
+
+        for (var j = 0; j < lines.length; j++) {
+            lines[j].setMap(null);
+        }
+        lines = []; // Vaciar el array de líneas
+        
+        round--;
+        if (round >= 0) {
+            initializeStreetView();
+            panel.classList.add("ocultar");
+        } else {
+            puntuacionTot.style.visibility = "visible";
+            console.log("Puntuación final: " + puntosTotales);
+            pPuntuacion.innerHTML = puntosTotales;
+        }
+    }
+</script>
+<script>
+    function restart(){
+        location.reload();
+    }
+</script>
+<!-- Reemplaza 'AIzaSyCgIQPaUQ4Nl9fOjxY2CFt7omYK_RZrTso' con tu propia clave de API -->
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgIQPaUQ4Nl9fOjxY2CFt7omYK_RZrTso&callback=initMap"></script>
 </body>
