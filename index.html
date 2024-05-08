@@ -127,8 +127,8 @@
     }
 
     .home {
-        height: 50%;
-        width: fit-content;
+        height: 70%;
+        width: auto;
     }
 
     .home:hover {
@@ -208,6 +208,50 @@
     .secP{
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0px; padding: 0px; text-align: center;
     }
+    .indicadores{
+        text-align: center; margin: 0px; font-size: 2vh; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        font-weight: 700; color: #ededed;
+    }
+    .indicadores{
+        cursor: default;
+    }
+    .volverBtn{
+        background-color: #cc302e; border: none; height: 5vh; width: 5vh; border-radius: 100vh;
+        background-repeat: no-repeat; background-size: cover; background-position: center; background-image: url(img/recLoc.png);
+        bottom: 24vh; right: 35vh; display: flex; z-index: 4; position: absolute;
+    }
+    .volverBtn:hover{
+        cursor: pointer;
+    }
+
+.volverBtn:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+    transition: step-end 0.7s;
+}
+
+.volverBtn .tooltiptext {
+    visibility: hidden;
+    width: 30vh;
+    background-color: #252525d0;
+    color: white;
+    padding-top: 0.5vh;
+    font-size: 2.5vh;
+    text-align: center;
+    border-radius: 1.5vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    position: absolute;
+    bottom: 125%;
+    right: -13vh;
+    opacity: 0;
+    transition: opacity 10s;
+    z-index: 100;
+}
+
 </style>
 
 <body style="margin: 0px; height: 100%">
@@ -247,15 +291,39 @@
     </div>
 
     <div id="miDiv"
-        style="padding-left: 5vh; padding-right: 5vh; align-items: start; justify-content: center; display: flex; flex-direction: column; position: absolute; height: 50px ; width: 95.4%; z-index: 4; background-color: #252525d0;">
+        style="padding-left: 5vh; padding-right: 5vh; align-items: center;
+        justify-content: space-between; display: flex; flex-direction: row; position:
+        absolute; height: 5vh ; width: 95.4%; z-index: 4; background-color: #252525d0; padding-top: 1vh; padding-bottom: 1vh;">
         <img onclick="home()" class="home" src="img/logo.png">
+
+        <div style="padding: 0px; width: 30vh; display: flex;
+        flex-direction: row; justify-content: center; align-items: center;">
+            <div>
+                <p class="indicadores" style="color: #c4c4c4;">Ronda</p>
+                <p id="rondaind" class="indicadores">1/5</p>
+            </div>
+            <hr style="height: 5vh; border: none; border-left: 1px solid #c4c4c4; ">
+            <div>
+                <p class="indicadores" style="color: #c4c4c4;">Puntuacion</p>
+                <p id="puntuacionind" class="indicadores">0</p>
+            </div>
+        </div>
     </div>
     <div
-        style="display: flex; height: 100vh; background-color: rgb(214, 214, 214); flex-direction: column; align-items: center; justify-content: center;">
+        style="display: flex; height: 100vh; background-color: #d6d6d6; flex-direction: column; align-items: center; justify-content: center;">
+    
         <div id="info" class="info">
-            <button onclick="adivinarBtn()" id="advBtn" class="advBtn" src="img/logo.png">Adivinar</button>
+        <button onclick="adivinarBtn()" id="advBtn" class="advBtn">Adivinar</button>
+
         </div>
-        <div class="map" id="map"></div>
+
+        <button onclick="volverBtn()" id="volverBtn" class="volverBtn">
+                <span class="tooltiptext">Da clic para volver al punto inicial</span>
+                        </button>
+        <div class="map" id="map">
+
+        </div>
+
         <div id="street-view"></div>
     </div>
     <script>
@@ -263,9 +331,12 @@
         var markers = []; // Array para almacenar los marcadores
         var lines = []; // Array para almacenar las líneas dibujadas en el mapa
         var round = 5;
+        var roundinv = 1;
         var marker = null;
         var menu = false;
         var mlat, mlng, plat, plng;
+        var streetView = null;
+        var randomCoordinates = null;
 
         var panel = document.getElementById("resPanel");
 
@@ -399,6 +470,10 @@
                 dibujarLineaRecta({ lat: plat, lng: plng }, { lat: mlat, lng: mlng });
 
                 puntosTotales += puntos;
+
+                var puntuacionind = document.getElementById("puntuacionind");
+
+                puntuacionind.innerHTML = puntosTotales;
             }
         }
 
@@ -461,9 +536,39 @@
 
                                 // Agrega los eventos mouseover y mouseout al mapa y al street view después de que se inicialice
                 var map = document.getElementById("map");
+                var volverBtn = document.getElementById("volverBtn");
                 var info = document.getElementById("info");
 
                 
+                volverBtn.addEventListener("mouseover", function () {
+                    if (menu == false) {
+                        info.style.width = "50vh";
+                        info.style.transition = "ease-in 0.2s";
+                        map.style.width = "50vh";
+                        map.style.height = "35vh";
+                        map.style.transition = "ease-in 0.2s";
+                        volverBtn.style.bottom = "38vh";
+                        volverBtn.style.right = "45vh";
+                        volverBtn.style.transform = "rotate(-360deg)";
+                        volverBtn.style.transition = "ease-in-out 0.7s";
+                    }
+                });
+
+                volverBtn.addEventListener("mouseout", function () {
+                    if (menu == false) {
+                        info.style.width = "40vh";
+                        info.style.transition = "ease-in-out 0.5s";
+                        map.style.width = "40vh";
+                        map.style.height = "20vh";
+                        map.style.transition = "ease-in-out 0.5s";
+                        volverBtn.style.bottom = "24vh";
+                        volverBtn.style.right = "35vh";
+                        volverBtn.style.transform = "rotate(0deg)"; // Rotación original
+                        volverBtn.style.transition = "ease-in-out 0.5s";
+                    }
+                });
+
+
                     map.addEventListener("mouseover", function () {
                         if (menu == false) {
                             info.style.width = "50vh";
@@ -471,6 +576,9 @@
                             map.style.width = "50vh";
                             map.style.height = "35vh";
                             map.style.transition = "ease-in 0.2s";
+                            volverBtn.style.bottom = "38vh";
+                            volverBtn.style.right = "45vh";
+                            volverBtn.style.transition = "ease-in-out 0.2s";
                         }
                     });
 
@@ -481,16 +589,22 @@
                             map.style.width = "40vh";
                             map.style.height = "20vh";
                             map.style.transition = "ease-in-out 0.5s";
+                            volverBtn.style.bottom = "24vh";
+                            volverBtn.style.right = "35vh";
+                            volverBtn.style.transition = "ease-in-out 0.5s";
                         }
                     });
 
                     info.addEventListener("mouseover", function () {
                         if (menu == false) {
                             info.style.width = "50vh";
-                            info.style.transition = "ease-in-out 0.2s";
+                            info.style.transition = "ease-in 0.2s";
                             map.style.width = "50vh";
                             map.style.height = "35vh";
-                            map.style.transition = "ease-in-out 0.2s";
+                            map.style.transition = "ease-in 0.2s";
+                            volverBtn.style.bottom = "38vh";
+                            volverBtn.style.right = "45vh";
+                            volverBtn.style.transition = "ease-in-out 0.2s";
                         }
                     });
 
@@ -501,6 +615,9 @@
                             map.style.width = "40vh";
                             map.style.height = "20vh";
                             map.style.transition = "ease-in-out 0.5s";
+                            volverBtn.style.bottom = "24vh";
+                            volverBtn.style.right = "35vh";
+                            volverBtn.style.transition = "ease-in-out 0.5s";
                         }
                     });
             });
@@ -553,7 +670,7 @@
                             position: google.maps.ControlPosition.INLINE_START_BLOCK_END // Cambia la posición del control de zoom
                         }
                     };
-                    var streetView = new google.maps.StreetViewPanorama(document.getElementById('street-view'), panoramaOptions);
+                    streetView = new google.maps.StreetViewPanorama(document.getElementById('street-view'), panoramaOptions);
                     getAddress(coordinates);
                 } else {
                     attempts++;
@@ -567,7 +684,7 @@
         }
 
         function generateAndCheckCoordinates() {
-            var randomCoordinates = generateRandomCoordinates(22.352500, 22.210202, -97.904524, -97.784303);
+            randomCoordinates = generateRandomCoordinates(22.352500, 22.210202, -97.904524, -97.784303);
             checkStreetViewAvailability(randomCoordinates);
         }
 
@@ -673,7 +790,7 @@
         lines = []; // Vaciar el array de líneas
         
         round--;
-        if (round >= 0) {
+        if (round > 0) {
             initializeStreetView();
             panel.classList.add("ocultar");
         } else {
@@ -681,12 +798,41 @@
             console.log("Puntuación final: " + puntosTotales);
             pPuntuacion.innerHTML = puntosTotales;
         }
+        roundinv++
+        var rondaind = document.getElementById("rondaind");
+        rondaind.innerHTML = roundinv+"/5"
+        
     }
 </script>
 <script>
     function restart(){
         location.reload();
     }
+</script>
+<script>
+    function volverBtn() {
+        var panoramaOptions = {
+            addressControl: false,
+            fullscreenControl: false,
+            position: randomCoordinates, // Usa las coordenadas almacenadas
+            pov: { heading: 0, pitch: 0 },
+            zoom: 1,
+
+            showRoadLabels: false,
+
+            fullScreenControlOptions: {
+                position: google.maps.ControlPosition.INLINE_START_BLOCK_END,
+            },
+            panControlOptions: {
+                position: google.maps.ControlPosition.INLINE_START_BLOCK_END,
+            },
+            zoomControlOptions: {
+                position: google.maps.ControlPosition.INLINE_START_BLOCK_END
+            }
+        };
+        streetView = new google.maps.StreetViewPanorama(document.getElementById('street-view'), panoramaOptions);
+    }
+
 </script>
 <!-- Reemplaza 'AIzaSyCgIQPaUQ4Nl9fOjxY2CFt7omYK_RZrTso' con tu propia clave de API -->
     <script async defer
