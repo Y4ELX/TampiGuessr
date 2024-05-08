@@ -220,7 +220,7 @@
         </div>
     </div>
 
-    <div id=" puntuacionTot" style="z-index: 60; visibility: hidden;  background-color: #252525; position: absolute; width: 100%; height: 100vh;  display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    <div id="puntuacionTot" style="z-index: 60; visibility: hidden;  background-color: #252525; position: absolute; width: 100%; height: 100vh;  display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <div
             style="display: flex; flex-direction: column; align-items: center; border-radius: 3vh; justify-content: center; text-align: center; width: 60%;">
             <p
@@ -259,9 +259,9 @@
         <div id="street-view"></div>
     </div>
     <script>
+        var puntosTotales = 0;
         var markers = []; // Array para almacenar los marcadores
         var lines = []; // Array para almacenar las líneas dibujadas en el mapa
-        var puntosTotales = 0;
         var round = 5;
         var marker = null;
         var menu = false;
