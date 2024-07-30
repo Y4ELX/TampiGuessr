@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botón con Tooltip</title>
+    <style>
+        /* Estilo para el tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 1px dotted black;
+            /* Línea punteada */
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Ejemplo de Botón con Tooltip</h2>
+
+    <!-- Aquí está el botón con el tooltip -->
+    <div class="tooltip">
+        <button>Botón</button>
+        <span class="tooltiptext">Este botón realiza una acción.</span>
+    </div>
+
+    <p>Mueve el mouse sobre el botón para ver el tooltip.</p>
+
+</body>
+
+</html>
