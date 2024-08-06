@@ -365,6 +365,20 @@
             <p class="secP">de 5,000 puntos</p>
         </div>
     </div>
+    
+<div id="puntuacionTot"
+    style="z-index: 60; visibility: hidden;  background-color: #252525; position: absolute; width: 100%; height: 100vh;  display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    <div
+        style="display: flex; flex-direction: column; align-items: center; border-radius: 3vh; justify-content: center; text-align: center; width: 60%;">
+        <p
+            style="margin: 0px; color: #ededed; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 900; font-size: 8vh;">
+            Puntuación Total</p>
+        <p id="pPuntuacion"
+            style="margin: 0px; color: #ededed; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 600; font-size: 8vh;">
+            404</p>
+        <button onclick="restart()" class="actBtn"></button>
+    </div>
+</div>
 
     <div id="miDiv"
         style="padding-left: 5vh; padding-right: 5vh; align-items: center;
@@ -931,7 +945,7 @@
                 initializeStreetView();
                 panel.classList.add("ocultar");
             } else {
-                //puntuacionTot.style.visibility = "visible";
+                puntuacionTot.style.visibility = "visible";
                 console.log("Puntuación final: " + puntosTotales);
                 pPuntuacion.innerHTML = puntosTotales;
             }
