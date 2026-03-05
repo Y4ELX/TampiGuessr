@@ -10,24 +10,35 @@
 </p>
 
 <p align="center">
-Un juego tipo <b>GeoGuessr</b> donde debes adivinar ubicaciones<br>
-pero <b>solo dentro de Tampico, Tamaulipas</b>.
+<b>Adivina ubicaciones dentro de Tampico usando Street View</b>
 </p>
 
 ---
 
-# 🎮 Jugar
+# 🎮 Juega Ahora
 
 <p align="center">
 
 <a href="https://tampiguessr-17a8b.web.app/">
-<img src="https://img.shields.io/badge/PLAY%20TAMPIGUESSR-ff0000?style=for-the-badge&logo=googlechrome&logoColor=white"/>
+
+<img width="500" src="https://github.com/user-attachments/assets/d53259fc-17b7-475b-bf10-b3d794916203"/>
+
 </a>
 
 </p>
 
 <p align="center">
-Explora calles, avenidas, colonias y rincones icónicos del sur de Tamaulipas  
+
+<a href="https://tampiguessr-17a8b.web.app/">
+
+<img src="https://img.shields.io/badge/PLAY%20NOW-TampiGuessr-ff0000?style=for-the-badge&logo=googlechrome&logoColor=white"/>
+
+</a>
+
+</p>
+
+<p align="center">
+Explora calles, avenidas y colonias de <b>Tampico, Tamaulipas</b>  
 y demuestra qué tan <b>tampiqueño</b> eres realmente.
 </p>
 
@@ -37,9 +48,9 @@ y demuestra qué tan <b>tampiqueño</b> eres realmente.
 
 1️⃣ Apareces en una **ubicación aleatoria de Tampico**
 
-2️⃣ Puedes explorar el lugar usando **Street View**
+2️⃣ Puedes explorar usando **Street View**
 
-3️⃣ Observa pistas como:
+3️⃣ Busca pistas como:
 
 - letreros
 - negocios
@@ -48,7 +59,7 @@ y demuestra qué tan <b>tampiqueño</b> eres realmente.
 
 4️⃣ Marca en el mapa dónde crees que estás
 
-5️⃣ ¡Mientras más cerca estés, **más puntos ganas**!
+5️⃣ Mientras más cerca estés, **más puntos ganas**
 
 ---
 
@@ -67,8 +78,6 @@ y demuestra qué tan <b>tampiqueño</b> eres realmente.
 
 # 🧠 ¿Qué tan tampiqueño eres?
 
-Este juego responde la pregunta más importante:
-
 > **¿Realmente conoces Tampico o solo sabes llegar a Altama?**
 
 Pon a prueba tu conocimiento de:
@@ -79,15 +88,6 @@ Pon a prueba tu conocimiento de:
 - lugares icónicos
 - calles que solo los locales reconocen
 
----
-
-# 📸 Screenshots
-
-<p align="center">
-
-<img width="700" src="https://github.com/user-attachments/assets/d53259fc-17b7-475b-bf10-b3d794916203" />
-
-</p>
 
 ---
 
@@ -111,17 +111,27 @@ Tecnologías utilizadas:
 
 # 🚀 Proyecto
 
-TampiGuessr es un **proyecto independiente** creado por un desarrollador de Tampico  
-con la intención de construir algo **divertido para la comunidad local**.
+**TampiGuessr** es un proyecto independiente creado por **mí**, un desarrollador de **Tampico, Tamaulipas 🇲🇽**, con la intención de construir algo **divertido para la comunidad local** y celebrar la ciudad a través de un juego.
+
+Si te gustan este tipo de proyectos, puedes visitar mi perfil de GitHub donde encontrarás **más repositorios, experimentos y proyectos personales**.
+
+<p align="center">
+
+<a href="https://github.com/Y4ELX">
+<img src="https://img.shields.io/badge/Follow%20me%20on-GitHub-000?style=for-the-badge&logo=github&logoColor=white"/>
+</a>
+
+</p>
 
 ---
 
-# ⭐ Si te gusta el proyecto
+# ⭐ Apoya el proyecto
 
-Apoya el proyecto dejando una **⭐ en el repositorio**.
+Si te gusta el juego:
 
-También puedes compartir el juego con tus amigos y ver  
-**quién conoce mejor Tampico.**
+- ⭐ Dale **star al repositorio**
+- 🎮 Compártelo con tus amigos
+- 🏆 Vean **quién conoce mejor Tampico**
 
 ---
 
@@ -130,7 +140,9 @@ También puedes compartir el juego con tus amigos y ver
 <p align="center">
 
 <a href="https://tampiguessr-17a8b.web.app/">
-<img src="https://img.shields.io/badge/JUGAR%20AHORA-TampiGuessr-red?style=for-the-badge"/>
+
+<img src="https://img.shields.io/badge/JUGAR%20AHORA-TampiGuessr-red?style=for-the-badge&logo=googlemaps&logoColor=white"/>
+
 </a>
 
 </p>
