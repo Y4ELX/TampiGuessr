@@ -19,7 +19,7 @@
 
 <p align="center">
 
-<a href="https://tampiguessr-17a8b.web.app/">
+<a href="https://tampiguessr.com">
 
 <img width="500" src="https://github.com/user-attachments/assets/d53259fc-17b7-475b-bf10-b3d794916203"/>
 
@@ -29,7 +29,7 @@
 
 <p align="center">
 
-<a href="https://tampiguessr-17a8b.web.app/">
+<a href="https://tampiguessr.com">
 
 <img src="https://img.shields.io/badge/PLAY%20NOW-TampiGuessr-ff0000?style=for-the-badge&logo=googlechrome&logoColor=white"/>
 
